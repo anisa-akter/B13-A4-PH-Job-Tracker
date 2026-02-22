@@ -37,6 +37,7 @@ function makeTabActive(tabId) {
 
 function filterJobs(status) {
   const allCards = document.querySelectorAll("#jobPostIDParent > div[id^='jobPostID']");
+  const emptyState = document.getElementById("emptyStateID");
   let visibleCount = 0;
   let totalCount = 0;
   
@@ -60,21 +61,32 @@ function filterJobs(status) {
     }
   });
   
+  // Show/hide empty state
+  if (visibleCount === 0) {
+    emptyState.style.display = "flex";
+  } else {
+    emptyState.style.display = "none";
+  }
+  
   // Update available jobs count
   const countElement = document.getElementById("availableJobsCountID");
   if (status === "ALL") {
-    countElement.textContent = `${totalCount} jobs`;
+    
+    countElement.textContent = `${totalCount} ${totalCount > 1 ? "jobs" : "job"}`;
   } else {
-    countElement.textContent = `${visibleCount} out of ${totalCount} jobs`;
+    countElement.textContent = `${visibleCount} out of ${totalCount} ${totalCount > 1 ? "jobs" : "job"}`;
   }
 }
 
-function updateJobStatus(jobIndex, newStatus) {
-  // Update job data
-  jobPosts[jobIndex].status = newStatus;
+function updateJobStatus(jobId, newStatus) {
+  // Find and update job data
+  const jobPost = jobPosts.find(job => job.id === jobId);
+  if (!jobPost) return;
+  
+  jobPost.status = newStatus;
   
   // Update UI
-  const cardId = "jobPostID" + jobIndex;
+  const cardId = "jobPostID" + jobId;
   const card = document.getElementById(cardId);
   const statusSpan = card.querySelector("span");
   
@@ -102,12 +114,39 @@ function updateCounters() {
   rejectedValueID.innerText = rejectedCount;
 }
 
+function deleteJob(jobId) {
+  // Remove from DOM
+  const cardId = "jobPostID" + jobId;
+  const card = document.getElementById(cardId);
+  if (card) {
+    card.remove();
+  }
+  
+  // Remove from jobPosts array by finding the index
+  const jobIndex = jobPosts.findIndex(job => job.id === jobId);
+  if (jobIndex > -1) {
+    jobPosts.splice(jobIndex, 1);
+  }
+  
+  // Update counters
+  updateCounters();
+  
+  // Get current active tab and reapply filter
+  let activeTab = "ALL";
+  if (tabInterviewId.classList.contains("tab-active")) {
+    activeTab = "INTERVIEW";
+  } else if (tabRejectedId.classList.contains("tab-active")) {
+    activeTab = "REJECTED";
+  }
+  filterJobs(activeTab);
+}
+
 function loadJobs(){
     for(let index in jobPosts){
         let jobPost = jobPosts[index];
         let jobPostTemplate = document.getElementById("jobPostID");
         let clonedJobPost = jobPostTemplate.cloneNode(true);
-        clonedJobPost.id = "jobPostID" + index;
+        clonedJobPost.id = "jobPostID" + jobPost.id;
         clonedJobPost.style.display = "block";
         
         // Update cloned element with real data
@@ -132,13 +171,19 @@ function loadJobs(){
         }
         
         // Add event listeners to Interview and Rejected buttons
-        const buttons = clonedJobPost.querySelectorAll("button");
+        const buttons = clonedJobPost.querySelectorAll("button:not(.delete-btn)");
         buttons[0].addEventListener("click", function() {
-            updateJobStatus(index, "INTERVIEW");
+            updateJobStatus(jobPost.id, "INTERVIEW");
         });
         
         buttons[1].addEventListener("click", function() {
-            updateJobStatus(index, "REJECTED");
+            updateJobStatus(jobPost.id, "REJECTED");
+        });
+        
+        // Add event listener to delete button
+        const deleteBtn = clonedJobPost.querySelector(".delete-btn");
+        deleteBtn.addEventListener("click", function() {
+            deleteJob(jobPost.id);
         });
         
         document.getElementById("jobPostIDParent").appendChild(clonedJobPost);
@@ -149,6 +194,7 @@ function loadJobs(){
 
 const jobPosts = [
   {
+    id: 1,
     company: "Google",
     position: "Frontend Developer",
     location: "Mountain View, CA",
@@ -159,6 +205,7 @@ const jobPosts = [
       "Build scalable user interfaces for Google products using modern JavaScript frameworks and performance optimization techniques."
   },
   {
+    id: 2,
     company: "Microsoft",
     position: "Software Engineer",
     location: "Redmond, WA",
@@ -169,6 +216,7 @@ const jobPosts = [
       "Develop enterprise-level cloud applications using .NET and Azure services. Collaborate with cross-functional teams."
   },
   {
+    id: 3,
     company: "Amazon",
     position: "Backend Developer",
     location: "Seattle, WA",
@@ -179,6 +227,7 @@ const jobPosts = [
       "Design and maintain scalable backend systems supporting millions of daily transactions using AWS technologies."
   },
   {
+    id: 4,
     company: "Meta",
     position: "React Developer",
     location: "Menlo Park, CA",
@@ -189,6 +238,7 @@ const jobPosts = [
       "Create dynamic and responsive web applications using React and modern frontend architecture."
   },
   {
+    id: 5,
     company: "Netflix",
     position: "UI Engineer",
     location: "Los Gatos, CA",
@@ -199,6 +249,7 @@ const jobPosts = [
       "Enhance user experience for streaming platforms by building high-performance UI components."
   },
   {
+    id: 6,
     company: "Airbnb",
     position: "Full Stack Developer",
     location: "San Francisco, CA",
@@ -209,6 +260,7 @@ const jobPosts = [
       "Develop scalable full-stack applications using React, Node.js, and cloud infrastructure."
   },
   {
+    id: 7,
     company: "Spotify",
     position: "Mobile App Developer",
     location: "New York, NY",
@@ -219,6 +271,7 @@ const jobPosts = [
       "Build and optimize cross-platform mobile applications delivering seamless music streaming experiences."
   },
   {
+    id: 8,
     company: "Adobe",
     position: "JavaScript Engineer",
     location: "San Jose, CA",
@@ -229,6 +282,7 @@ const jobPosts = [
       "Work on creative cloud applications focusing on modern JavaScript frameworks and performance improvements."
   },
   {
+    id: 9,
     company: "Tesla",
     position: "Frontend Engineer",
     location: "Austin, TX",
@@ -239,6 +293,7 @@ const jobPosts = [
       "Develop responsive dashboards and internal tools supporting electric vehicle production systems."
   },
   {
+    id: 10,
     company: "Shopify",
     position: "Web Developer",
     location: "Remote",
