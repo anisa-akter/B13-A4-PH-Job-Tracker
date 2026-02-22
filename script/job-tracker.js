@@ -15,14 +15,17 @@ let tabRejectedId = document.getElementById("tabRejectedId");
 
 tabAllId.addEventListener("click", function () {
   makeTabActive(tabAllId);
+  filterJobs("ALL");
 });
 
 tabInterviewId.addEventListener("click", function () {
   makeTabActive(tabInterviewId);
+  filterJobs("INTERVIEW");
 });
 
 tabRejectedId.addEventListener("click", function () {
   makeTabActive(tabRejectedId);
+  filterJobs("REJECTED");
 });
 
 function makeTabActive(tabId) {
@@ -30,6 +33,58 @@ function makeTabActive(tabId) {
   tabInterviewId.classList.remove("tab-active", "bg-blue-700", "text-white");
   tabRejectedId.classList.remove("tab-active", "bg-blue-700", "text-white");
   tabId.classList.add("tab-active", "bg-blue-700", "text-white");
+}
+
+function filterJobs(status) {
+  const allCards = document.querySelectorAll("#jobPostIDParent > div[id^='jobPostID']");
+  allCards.forEach((card) => {
+    // Skip the template
+    if (card.id === "jobPostID") return;
+    
+    if (status === "ALL") {
+      card.style.display = "block";
+    } else {
+      const cardStatus = card.querySelector("span").textContent;
+      if (cardStatus === status) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    }
+  });
+}
+
+function updateJobStatus(jobIndex, newStatus) {
+  // Update job data
+  jobPosts[jobIndex].status = newStatus;
+  
+  // Update UI
+  const cardId = "jobPostID" + jobIndex;
+  const card = document.getElementById(cardId);
+  const statusSpan = card.querySelector("span");
+  
+  // Update status text and styling
+  statusSpan.textContent = newStatus;
+  statusSpan.classList.remove("bg-gray-200", "text-gray-800", "bg-green-200", "text-green-800", "bg-red-200", "text-red-800");
+  
+  if (newStatus === "INTERVIEW") {
+    statusSpan.classList.add("bg-green-200", "text-green-800");
+  } else if (newStatus === "REJECTED") {
+    statusSpan.classList.add("bg-red-200", "text-red-800");
+  }
+  
+  // Update counters
+  updateCounters();
+}
+
+function updateCounters() {
+  let totalCount = jobPosts.length;
+  let interviewCount = jobPosts.filter(job => job.status === "INTERVIEW").length;
+  let rejectedCount = jobPosts.filter(job => job.status === "REJECTED").length;
+  
+  totalValueID.innerText = totalCount;
+  interviewValueID.innerText = interviewCount;
+  rejectedValueID.innerText = rejectedCount;
 }
 
 function loadJobs(){
@@ -60,6 +115,16 @@ function loadJobs(){
         } else {
             statusSpan.classList.add("bg-gray-200", "text-gray-800");
         }
+        
+        // Add event listeners to Interview and Rejected buttons
+        const buttons = clonedJobPost.querySelectorAll("button");
+        buttons[0].addEventListener("click", function() {
+            updateJobStatus(index, "INTERVIEW");
+        });
+        
+        buttons[1].addEventListener("click", function() {
+            updateJobStatus(index, "REJECTED");
+        });
         
         document.getElementById("jobPostIDParent").appendChild(clonedJobPost);
     }
@@ -171,4 +236,5 @@ const jobPosts = [
 ];
 
 loadJobs();
+updateCounters();
 
