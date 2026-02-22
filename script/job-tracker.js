@@ -1,4 +1,3 @@
-// Initialize the job application counts
 let totalValueID = document.getElementById("totalValueID");
 totalValueID.innerText = 0;
 
@@ -8,7 +7,6 @@ interviewValueID.innerText = 0;
 let rejectedValueID = document.getElementById("rejectedValueID");
 rejectedValueID.innerText = 0;
 
-// Add event listeners to the tabs
 let tabAllId = document.getElementById("tabAllId");
 let tabInterviewId = document.getElementById("tabInterviewId");
 let tabRejectedId = document.getElementById("tabRejectedId");
@@ -42,7 +40,6 @@ function filterJobs(status) {
   let totalCount = 0;
   
   allCards.forEach((card) => {
-    // Skip the template
     if (card.id === "jobPostID") return;
     
     totalCount++;
@@ -61,14 +58,12 @@ function filterJobs(status) {
     }
   });
   
-  // Show/hide empty state
   if (visibleCount === 0) {
     emptyState.style.display = "flex";
   } else {
     emptyState.style.display = "none";
   }
   
-  // Update available jobs count
   const countElement = document.getElementById("availableJobsCountID");
   if (status === "ALL") {
     
@@ -79,18 +74,15 @@ function filterJobs(status) {
 }
 
 function updateJobStatus(jobId, newStatus) {
-  // Find and update job data
   const jobPost = jobPosts.find(job => job.id === jobId);
   if (!jobPost) return;
   
   jobPost.status = newStatus;
   
-  // Update UI
   const cardId = "jobPostID" + jobId;
   const card = document.getElementById(cardId);
   const statusSpan = card.querySelector("span");
   
-  // Update status text and styling
   statusSpan.textContent = newStatus;
   statusSpan.classList.remove("bg-gray-200", "text-gray-800", "bg-green-200", "text-green-800", "bg-red-200", "text-red-800");
   
@@ -100,7 +92,6 @@ function updateJobStatus(jobId, newStatus) {
     statusSpan.classList.add("bg-red-200", "text-red-800");
   }
   
-  // Update counters
   updateCounters();
 }
 
@@ -115,23 +106,19 @@ function updateCounters() {
 }
 
 function deleteJob(jobId) {
-  // Remove from DOM
   const cardId = "jobPostID" + jobId;
   const card = document.getElementById(cardId);
   if (card) {
     card.remove();
   }
   
-  // Remove from jobPosts array by finding the index
   const jobIndex = jobPosts.findIndex(job => job.id === jobId);
   if (jobIndex > -1) {
     jobPosts.splice(jobIndex, 1);
   }
   
-  // Update counters
   updateCounters();
   
-  // Get current active tab and reapply filter
   let activeTab = "ALL";
   if (tabInterviewId.classList.contains("tab-active")) {
     activeTab = "INTERVIEW";
@@ -149,18 +136,15 @@ function loadJobs(){
         clonedJobPost.id = "jobPostID" + jobPost.id;
         clonedJobPost.style.display = "block";
         
-        // Update cloned element with real data
         clonedJobPost.querySelector("h4").textContent = jobPost.company;
         let paragraphs = clonedJobPost.querySelectorAll("p");
         paragraphs[0].textContent = jobPost.position;
         paragraphs[1].textContent = `${jobPost.location} • ${jobPost.type} • ${jobPost.salary}`;
         paragraphs[2].textContent = jobPost.description;
         
-        // Update status span
         let statusSpan = clonedJobPost.querySelector("span");
         statusSpan.textContent = jobPost.status;
         
-        // Update status styling based on status
         statusSpan.classList.remove("bg-gray-200", "text-gray-800");
         if(jobPost.status === "INTERVIEW"){
             statusSpan.classList.add("bg-green-200", "text-green-800");
@@ -170,7 +154,6 @@ function loadJobs(){
             statusSpan.classList.add("bg-gray-200", "text-gray-800");
         }
         
-        // Add event listeners to Interview and Rejected buttons
         const buttons = clonedJobPost.querySelectorAll("button:not(.delete-btn)");
         buttons[0].addEventListener("click", function() {
             updateJobStatus(jobPost.id, "INTERVIEW");
@@ -180,7 +163,6 @@ function loadJobs(){
             updateJobStatus(jobPost.id, "REJECTED");
         });
         
-        // Add event listener to delete button
         const deleteBtn = clonedJobPost.querySelector(".delete-btn");
         deleteBtn.addEventListener("click", function() {
             deleteJob(jobPost.id);
