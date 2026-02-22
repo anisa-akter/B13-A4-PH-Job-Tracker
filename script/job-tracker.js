@@ -37,21 +37,36 @@ function makeTabActive(tabId) {
 
 function filterJobs(status) {
   const allCards = document.querySelectorAll("#jobPostIDParent > div[id^='jobPostID']");
+  let visibleCount = 0;
+  let totalCount = 0;
+  
   allCards.forEach((card) => {
     // Skip the template
     if (card.id === "jobPostID") return;
     
+    totalCount++;
+    
     if (status === "ALL") {
       card.style.display = "block";
+      visibleCount++;
     } else {
       const cardStatus = card.querySelector("span").textContent;
       if (cardStatus === status) {
         card.style.display = "block";
+        visibleCount++;
       } else {
         card.style.display = "none";
       }
     }
   });
+  
+  // Update available jobs count
+  const countElement = document.getElementById("availableJobsCountID");
+  if (status === "ALL") {
+    countElement.textContent = `${totalCount} jobs`;
+  } else {
+    countElement.textContent = `${visibleCount} out of ${totalCount} jobs`;
+  }
 }
 
 function updateJobStatus(jobIndex, newStatus) {
@@ -237,4 +252,5 @@ const jobPosts = [
 
 loadJobs();
 updateCounters();
+filterJobs("ALL");
 

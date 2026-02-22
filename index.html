@@ -39,7 +39,10 @@
     </section>
 
     <section class="max-w-[80%] mx-auto mt-10">
-      <h4 class="text-xl font-semibold mb-4">Available Jobs</h4>
+      <div class="flex items-center justify-between">
+        <h4 class="text-xl font-semibold mb-4">Available Jobs</h4>
+        <h4 class=" mb-4 text-sm" id="availableJobsCountID"></h4>
+      </div>
 
       <div>
         <div role="tablist" class="tabs gap-2">
@@ -66,14 +69,17 @@
     </section>
 
     <section class="max-w-[80%] mx-auto mt-4" id="jobPostIDParent">
-      <div class="border border-gray-200 rounded-md p-4" id="jobPostID" style="display: none;">
+      <div
+        class="border border-gray-200 rounded-md p-4"
+        id="jobPostID"
+        style="display: none"
+      >
         <h4 class="capitalize font-medium text-lg">Template</h4>
         <p class="text-gray-500 text-base mb-4"></p>
         <p class="text-gray-500 text-sm mb-4"></p>
         <span
           class="bg-gray-200 text-gray-800 px-2 py-1 rounded-md text-xs mb-4 inline-block"
-          ></span
-        >
+        ></span>
         <p></p>
         <div class="mt-4 flex justify-start items-center gap-4">
           <button class="btn btn-outline btn-success">Interview</button>
