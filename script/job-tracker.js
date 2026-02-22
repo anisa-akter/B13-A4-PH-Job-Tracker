@@ -32,11 +32,35 @@ function makeTabActive(tabId) {
   tabId.classList.add("tab-active", "bg-blue-700", "text-white");
 }
 
-function logPrint(){
-    for(let ele in jobPosts){
-        let jobPostID = document.getElementById("jobPostID");
-        let clonedJobPost = jobPostID.cloneNode(true);
-        clonedJobPost.id = "jobPostID" + ele;
+function loadJobs(){
+    for(let index in jobPosts){
+        let jobPost = jobPosts[index];
+        let jobPostTemplate = document.getElementById("jobPostID");
+        let clonedJobPost = jobPostTemplate.cloneNode(true);
+        clonedJobPost.id = "jobPostID" + index;
+        clonedJobPost.style.display = "block";
+        
+        // Update cloned element with real data
+        clonedJobPost.querySelector("h4").textContent = jobPost.company;
+        let paragraphs = clonedJobPost.querySelectorAll("p");
+        paragraphs[0].textContent = jobPost.position;
+        paragraphs[1].textContent = `${jobPost.location} • ${jobPost.type} • ${jobPost.salary}`;
+        paragraphs[2].textContent = jobPost.description;
+        
+        // Update status span
+        let statusSpan = clonedJobPost.querySelector("span");
+        statusSpan.textContent = jobPost.status;
+        
+        // Update status styling based on status
+        statusSpan.classList.remove("bg-gray-200", "text-gray-800");
+        if(jobPost.status === "INTERVIEW"){
+            statusSpan.classList.add("bg-green-200", "text-green-800");
+        } else if(jobPost.status === "REJECTED"){
+            statusSpan.classList.add("bg-red-200", "text-red-800");
+        } else {
+            statusSpan.classList.add("bg-gray-200", "text-gray-800");
+        }
+        
         document.getElementById("jobPostIDParent").appendChild(clonedJobPost);
     }
 }
@@ -146,4 +170,5 @@ const jobPosts = [
   }
 ];
 
-logPrint();
+loadJobs();
+
